@@ -27,6 +27,8 @@
 	<div>
 		<p></p>
 		<button onclick='snake()'>SNAKE! IT'S A SNAKE!</button><button onclick='snakeOut()'>SNAKE! GO OUT!</button>
+		<button onclick='snakePause()'>Pause</button>
+		<button onclick='snakeResume()'>Resume</button>
 	</div>
 	<div>
 		<p><label for="checkFollowHead">Follow head: </label><input type="checkbox" id="checkFollowHead" onclick="snakeFollow()">
@@ -84,6 +86,13 @@
 			headMarker.setLatLng(latlngs[len - 1]);
 		}
 
+		function snakePause(){
+			path.snakePause();
+		}
+
+		function snakeResume(){
+			path.snakeResume();
+		}
 
 		let checkBoxHead = document.getElementById("checkFollowHead");
 

@@ -29,6 +29,10 @@ L.Polyline.include({
 	_snakingIn: false,
 	_snakingOut: false,
 
+	// To control state of the snake
+	_snaking: false,
+	_snakingPauseTime: null,
+
 
 	/// TODO: accept a 'map' parameter, fall back to addTo() in case
 	/// performance.now is not available.
@@ -43,6 +47,7 @@ L.Polyline.include({
 		}
 
 		this._snakingIn = true;
+		this._snaking = true;
 		this._snakingTime = performance.now();
 		this._snakingVertices = this._snakingRings = this._snakingDistance = 0;
 
@@ -106,11 +111,48 @@ L.Polyline.include({
 		return this;
 	},
 
+	/**
+	 * Handler for snake animation pause
+	 *
+	 * @return {*}
+	 */
+	snakePause: function(){
+		if(this._snaking) {
+			this._snaking = false;
+			this._snakingPauseTime = this._snakingTime
+			this.fire('snakePause');
+		}
+		return this;
+	},
+
+	/**
+	 * Handler for snake animation resume
+	 *
+	 * @return {*}
+	 */
+	snakeResume: function(){
+		if(!this._snaking) {
+			this._snaking = true;
+			this._snake();
+			this.fire('snakeResume');
+		}
+		return this;
+	},
+
 	_snake: function(){
 		// If polyline has been removed from the map stop _snakeForward
-		if (!this._map) return;
+		// If use has selected the pause state, the snake action will exit from the cycle
+		if (!this._map || !this._snaking) return;
 
 		let now = performance.now();
+
+		// override the now and snakeTime if any previous pause time found to avoid snake jumps
+		if(this._snakingPauseTime) {
+			this._snakingTime = now;
+			now -= 0.001;
+			this._snakingPauseTime = null;
+		}
+
 		let timeDiff = now - this._snakingTime;	// In milliseconds
 		timeDiff = (timeDiff === 0 ? 0.001 : timeDiff); // avoids low time resolution issues in some browsers
 		this._snakingTime = now;
@@ -253,6 +295,7 @@ L.Polyline.include({
 	_snakeInEnd: function() {
 
 		this._snakingIn = false;
+		this._snaking = false;
 		if(!this._snakingOut){
 			this.setLatLngs(this._snakeLatLngs);
 		}
