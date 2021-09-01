@@ -52,6 +52,8 @@ fire the following events:
 - `snakeOut`: the tail progresses
 - `snakeInEnd`: the head reaches the final point
 - `snakeOutEnd`: the tail reaches the final point.
+- `snakePause`: pause the snake.
+- `snakeResume`: resume the snake again.
 
 Each one of theses event has the head or tail position as parameter.
 You can use it to do whatever you want. For example, you can make
